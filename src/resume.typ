@@ -20,7 +20,6 @@
   lang: "en",
   body,
 ) = {
-
   // Sets document metadata
   set document(author: author, title: author)
 
@@ -31,12 +30,12 @@
     size: font-size,
     lang: lang,
     // Disable ligatures so ATS systems do not get confused when parsing fonts.
-    ligatures: false
+    ligatures: false,
   )
 
   // Reccomended to have 0.5in margin on all sides
   set page(
-    margin: (0.5in),
+    margin: 0.5in,
     paper: paper,
   )
 
@@ -145,28 +144,12 @@
   institution: "",
   dates: "",
   degree: "",
-  gpa: "",
   location: "",
-  // Makes dates on upper right like rest of components
-  consistent: false,
 ) = {
-  if consistent {
-    // edu-constant style (dates top-right, location bottom-right)
-    generic-two-by-two(
-      top-left: strong(institution),
-      top-right: dates,
-      bottom-left: emph(degree),
-      bottom-right: emph(location),
-    )
-  } else {
-    // original edu style (location top-right, dates bottom-right)
-    generic-two-by-two(
-      top-left: strong(institution),
-      top-right: location,
-      bottom-left: emph(degree),
-      bottom-right: emph(dates),
-    )
-  }
+  generic-one-by-two(
+    left: strong(institution + ", " + location) + " " + $dash.em$ + " " + degree,
+    right: dates,
+  )
 }
 
 #let work(
@@ -194,7 +177,7 @@
       if role == "" {
         [*#name* #if url != "" and dates != "" [ (#link("https://" + url)[#url])]]
       } else {
-        [*#role*, #name #if url != "" and dates != ""  [ (#link("https://" + url)[#url])]]
+        [*#role*, #name #if url != "" and dates != "" [ (#link("https://" + url)[#url])]]
       }
     },
     right: {
@@ -212,14 +195,22 @@
   issuer: "",
   url: "",
   date: "",
+  validation_id: "",
 ) = {
-  [
-    *#name*, #issuer
-    #if url != "" {
-      [ (#link("https://" + url)[#url])]
+  [*#name*]
+  if issuer != "" {
+    [ , #issuer]
+  }
+  if validation_id != "" {
+    if url != "" {
+      [ (#link(url)[#validation_id])]
+    } else {
+      [ (Validation ID: #validation_id)]
     }
-    #h(1fr) #date
-  ]
+  } else if url != "" {
+    [ (#link(url)[#url])]
+  }
+  [#h(1fr) #date]
 }
 
 #let extracurriculars(
